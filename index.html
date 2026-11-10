@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -7,288 +8,346 @@
 <title>GOLD NEWS INTELLIGENCE</title>
 
 <style>
+* {
+  box-sizing: border-box;
+}
+
 body {
-  margin:0;
-  padding:18px;
-  background:#090d14;
-  color:#fff;
-  font-family:Arial,sans-serif;
+  margin: 0;
+  padding: 16px;
+  background: #090d14;
+  color: #fff;
+  font-family: Arial, sans-serif;
 }
-h1 {color:#e8bd55;font-size:23px}
-h2 {font-size:18px;color:#e8bd55}
-h3 {font-size:16px;color:#e8bd55}
-p {color:#c5ceda;line-height:1.8}
-.card,.news-box {
-  background:#151d29;
-  border:1px solid #293648;
-  border-radius:13px;
-  padding:16px;
-  margin:14px 0;
+
+header {
+  text-align: center;
+  padding: 18px 10px;
+  border-bottom: 1px solid #b89543;
+  margin-bottom: 18px;
 }
-.status {color:#f0c65b}
-small {color:#91a0b3}
+
+h1 {
+  color: #e8bd55;
+  font-size: 24px;
+  margin: 5px;
+}
+
+.clock {
+  color: #e8bd55;
+  font-size: 18px;
+  margin-top: 10px;
+}
+
+.subtitle {
+  color: #9ca8b8;
+  font-size: 13px;
+}
+
+.card {
+  background: #121a26;
+  border: 1px solid #263447;
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 15px;
+}
+
+.card h2 {
+  color: #e8bd55;
+  font-size: 18px;
+  margin-top: 0;
+  border-bottom: 1px solid #344154;
+  padding-bottom: 10px;
+}
+
+.status {
+  color: #9ca8b8;
+  font-size: 13px;
+}
+
 .news-item {
-  border-bottom:1px solid #34445a;
-  padding:12px 0;
-  line-height:1.8;
+  padding: 12px 0;
+  border-bottom: 1px solid #293444;
 }
+
+.news-item:last-child {
+  border-bottom: none;
+}
+
 .news-item a {
-  color:#fff;
-  text-decoration:none;
+  color: #f1d58c;
+  text-decoration: none;
+  font-size: 15px;
+  line-height: 1.7;
 }
+
+.news-item a:hover {
+  color: white;
+}
+
 .news-date {
-  color:#9aa8ba;
-  font-size:12px;
+  color: #8290a2;
+  font-size: 11px;
+  margin-top: 5px;
 }
-.news-message {
-  color:#c5ceda;
-  line-height:1.8;
-}
+
 button {
-  background:#e8bd55;
-  color:#101722;
-  border:0;
-  border-radius:9px;
-  padding:12px 20px;
-  font-size:15px;
-  font-weight:bold;
-  cursor:pointer;
-  width:100%;
+  width: 100%;
+  padding: 13px;
+  background: #c49b42;
+  color: #10151d;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 8px 0 16px;
 }
-button:disabled {
-  opacity:.6;
+
+button:active {
+  background: #e8bd55;
+}
+
+.explain {
+  color: #c3ccd8;
+  font-size: 14px;
+  line-height: 1.9;
+}
+
+.warning {
+  color: #e8bd55;
+  font-size: 12px;
+  line-height: 1.8;
+  text-align: center;
+  margin: 20px 5px;
+}
+
+footer {
+  color: #68778a;
+  text-align: center;
+  font-size: 11px;
+  padding: 15px;
 }
 </style>
 </head>
 
 <body>
 
-<h1>GOLD NEWS INTELLIGENCE</h1>
-<p>مركز متابعة الأخبار الاقتصادية العالمية</p>
+<header>
+  <h1>GOLD NEWS INTELLIGENCE</h1>
+  <div class="subtitle">نظام متابعة الأخبار الاقتصادية والجيوسياسية</div>
+  <div class="clock" id="clock">--:--:--</div>
+  <div class="subtitle" id="date"></div>
+</header>
 
-<div class="card">
-<h2>🕒 الوقت الحالي - العراق</h2>
-<p id="clock">جارٍ تحميل الوقت...</p>
-</div>
+<button onclick="refreshAll()">تحديث جميع الأخبار</button>
 
-<div class="card">
-<h2>🌏 السوق الآسيوي</h2>
-<p>الصين - اليابان - أستراليا</p>
-<p class="status">مصادر الأخبار الآسيوية لم تُربط بعد</p>
-</div>
-
-<div class="card">
-<h2>🇺🇸 السوق الأمريكي</h2>
-<p>التضخم - الوظائف - البطالة</p>
-<p class="status">تابع آخر الأخبار في الأقسام أدناه</p>
-</div>
-
-<div class="card">
-<h2>🏦 الاحتياطي الفيدرالي</h2>
-<p>قرارات الفائدة - تصريحات المسؤولين</p>
-<p class="status">تابع آخر الأخبار في القسم أدناه</p>
-</div>
-
-<div class="card">
-<h2>📊 معلومات عن تأثير الأخبار</h2>
-<p>
-تُعرض الأخبار لمتابعة المؤشرات الاقتصادية التي قد تؤثر
-في الأسواق. لا تحدد هذه الصفحة اتجاه الذهب ولا تقدم
-إشارات شراء أو بيع.
-</p>
-</div>
-
-<section id="economic-news">
-<h2>📰 الأخبار الاقتصادية الأمريكية</h2>
-<p>مصادر رسمية لمتابعة المستجدات</p>
-
-<button id="refresh-btn" onclick="loadAllNews()">
-تحديث الأخبار الآن
-</button>
-
-<div class="news-box">
-<h3>🏦 الاحتياطي الفيدرالي</h3>
-<div id="fed-news" class="news-message">
-جارٍ تحميل الأخبار...
-</div>
-<a href="https://www.federalreserve.gov/newsevents.htm"
-target="_blank" rel="noopener">
-المصدر الرسمي للفيدرالي
-</a>
-</div>
-
-<div class="news-box">
-<h3>📈 التضخم والأسعار</h3>
-<div id="cpi-news" class="news-message">
-جارٍ تحميل الأخبار...
-</div>
-<a href="https://www.bls.gov/news.release/cpi.htm"
-target="_blank" rel="noopener">
-تقرير التضخم الرسمي
-</a>
-</div>
-
-<div class="news-box">
-<h3>👷 الوظائف والبطالة</h3>
-<div id="jobs-news" class="news-message">
-جارٍ تحميل الأخبار...
-</div>
-<a href="https://www.bls.gov/news.release/empsit.htm"
-target="_blank" rel="noopener">
-تقرير الوظائف الرسمي
-</a>
-</div>
-
-<p class="news-date" id="last-update">
-لم يتم التحديث بعد
-</p>
+<section class="card">
+  <h2>🌏 السوق الآسيوي</h2>
+  <div class="status">الصين - اليابان - أستراليا - آسيا والمحيط الهادئ</div>
+  <div id="asiaNews">جاري تحميل الأخبار...</div>
 </section>
 
-<div class="card">
-<small>
-هذه لوحة معلومات تعليمية. الأخبار قد تتأخر أو يتعذر تحميلها،
-وليست توصية بالتداول.
-</small>
+<section class="card">
+  <h2>🇺🇸 الاحتياطي الفيدرالي الأمريكي</h2>
+  <div class="status">قرارات الفائدة والسياسة النقدية وتصريحات الفيدرالي</div>
+  <div id="fedNews">جاري تحميل الأخبار...</div>
+</section>
+
+<section class="card">
+  <h2>📊 التضخم الأمريكي CPI</h2>
+  <div class="status">مؤشرات أسعار المستهلك والتضخم</div>
+  <div id="cpiNews">جاري تحميل الأخبار...</div>
+</section>
+
+<section class="card">
+  <h2>👷 الوظائف والبطالة الأمريكية</h2>
+  <div class="status">بيانات الوظائف ومعدل البطالة وسوق العمل</div>
+  <div id="jobsNews">جاري تحميل الأخبار...</div>
+</section>
+
+<section class="card">
+  <h2>🌍 الحروب والتوترات الجيوسياسية</h2>
+  <div class="status">متابعة الأخبار الدولية والنزاعات والهدن</div>
+  <div id="warNews">جاري تحميل الأخبار...</div>
+</section>
+
+<section class="card">
+  <h2>🧠 كيف يمكن أن تؤثر الأخبار على الذهب؟</h2>
+
+  <div class="explain">
+    <b>1- الفائدة الأمريكية:</b>
+    ارتفاع توقعات الفائدة قد يزيد جاذبية الدولار ويضغط على الذهب أحياناً.
+
+    <br><br>
+
+    <b>2- التضخم CPI:</b>
+    بيانات التضخم تؤثر في توقعات الفائدة الأمريكية، وقد تؤثر بالتالي على الذهب.
+
+    <br><br>
+
+    <b>3- البطالة والوظائف:</b>
+    بيانات سوق العمل قد تغير توقعات المستثمرين بشأن قرارات الفيدرالي.
+
+    <br><br>
+
+    <b>4- الحروب والتوترات:</b>
+    قد تزيد المخاوف العالمية الطلب على الذهب كملاذ آمن، لكن التأثير ليس مضموناً.
+
+    <br><br>
+
+    <b>5- السوق الآسيوي:</b>
+    البيانات الاقتصادية الصينية واليابانية قد تؤثر في الدولار والطلب العالمي على الذهب.
+  </div>
+</section>
+
+<div class="warning">
+  ⚠️ هذا الموقع مخصص لمتابعة الأخبار والتثقيف فقط.
+  لا يقدم توقعات مؤكدة أو توصيات شراء وبيع.
 </div>
 
+<footer>
+  GOLD NEWS INTELLIGENCE<br>
+  تحديث الأخبار تلقائياً كل 10 دقائق
+</footer>
+
 <script>
+const proxy = "https://api.rss2json.com/v1/api.json?rss_url=";
+
 function updateClock() {
+  const now = new Date();
+
   document.getElementById("clock").textContent =
-    new Date().toLocaleString("ar-IQ", {
-      timeZone:"Asia/Baghdad",
-      dateStyle:"full",
-      timeStyle:"medium"
+    now.toLocaleTimeString("ar-IQ", {
+      timeZone: "Asia/Baghdad",
+      hour12: true
+    });
+
+  document.getElementById("date").textContent =
+    now.toLocaleDateString("ar-IQ", {
+      timeZone: "Asia/Baghdad",
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric"
     });
 }
 
-updateClock();
 setInterval(updateClock, 1000);
+updateClock();
 
-const feeds = [
-  {
-    url:"https://www.federalreserve.gov/feeds/press_monetary.xml",
-    id:"fed-news",
-    filter:null
-  },
-  {
-    url:"https://www.bls.gov/feed/bls_latest.rss",
-    id:"cpi-news",
-    filter:/consumer price|inflation|CPI|producer price|PPI/i
-  },
-  {
-    url:"https://www.bls.gov/feed/bls_latest.rss",
-    id:"jobs-news",
-    filter:/employment situation|unemployment|job openings|employment/i
-  }
-];
+function showMessage(id, message) {
+  document.getElementById(id).innerHTML =
+    '<div class="status">' + message + '</div>';
+}
 
-async function loadFeed(feed) {
-  const box = document.getElementById(feed.id);
-  box.textContent = "جارٍ تحميل الأخبار...";
+function cleanText(text) {
+  const div = document.createElement("div");
+  div.textContent = text || "";
+  return div.innerHTML;
+}
+
+async function loadFeed(id, feedUrl, keywords = []) {
+  showMessage(id, "جاري تحميل الأخبار...");
 
   try {
-    const api =
-      "https://api.rss2json.com/v1/api.json?rss_url=" +
-      encodeURIComponent(feed.url);
-
-    const response = await fetch(api);
+    const response = await fetch(
+      proxy + encodeURIComponent(feedUrl)
+    );
 
     if (!response.ok) {
-      throw new Error("Network error");
+      throw new Error("Feed request failed");
     }
 
     const data = await response.json();
 
-    if (data.status !== "ok") {
-      throw new Error("Feed error");
+    if (!data.items || data.items.length === 0) {
+      throw new Error("No items");
     }
 
-    let items = data.items || [];
+    let items = data.items;
 
-    if (feed.filter) {
-      items = items.filter(item =>
-        feed.filter.test(item.title || "")
-      );
+    if (keywords.length > 0) {
+      items = items.filter(item => {
+        const text = (
+          (item.title || "") + " " +
+          (item.description || "")
+        ).toLowerCase();
+
+        return keywords.some(word =>
+          text.includes(word.toLowerCase())
+        );
+      });
     }
-
-    box.replaceChildren();
 
     if (items.length === 0) {
-      box.textContent = "لا توجد أخبار مطابقة متاحة حالياً.";
+      showMessage(id, "لا توجد أخبار مطابقة حالياً.");
       return;
     }
 
-    items.slice(0, 5).forEach(item => {
-      const row = document.createElement("div");
-      row.className = "news-item";
+    const output = items.slice(0, 7).map(item => {
+      const title = cleanText(item.title);
+      const link = item.link || "#";
+      const date = cleanText(item.pubDate || "");
 
-      const link = document.createElement("a");
-      link.textContent = item.title || "خبر بدون عنوان";
+      return `
+        <div class="news-item">
+          <a href="${link}" target="_blank" rel="noopener noreferrer">
+            ${title}
+          </a>
+          <div class="news-date">${date}</div>
+        </div>
+      `;
+    }).join("");
 
-      try {
-        const parsed = new URL(item.link);
-        if (parsed.protocol !== "https:" &&
-            parsed.protocol !== "http:") {
-          throw new Error("Invalid link");
-        }
-        link.href = parsed.href;
-        link.target = "_blank";
-        link.rel = "noopener noreferrer";
-      } catch {
-        link.removeAttribute("href");
-      }
-
-      const date = document.createElement("div");
-      date.className = "news-date";
-
-      if (item.pubDate) {
-        const parsedDate = new Date(item.pubDate);
-        date.textContent = isNaN(parsedDate.getTime())
-          ? ""
-          : parsedDate.toLocaleString("ar-IQ", {
-              timeZone:"Asia/Baghdad"
-            });
-      }
-
-      row.appendChild(link);
-      row.appendChild(date);
-      box.appendChild(row);
-    });
+    document.getElementById(id).innerHTML = output;
 
   } catch (error) {
-    box.textContent =
-      "تعذر تحميل الأخبار الآن. استخدم رابط المصدر الرسمي.";
+    showMessage(
+      id,
+      "تعذر تحميل الأخبار حالياً. حاول التحديث لاحقاً."
+    );
   }
 }
 
-let loading = false;
+async function refreshAll() {
 
-async function loadAllNews() {
-  if (loading) return;
+  loadFeed(
+    "asiaNews",
+    "https://feeds.bbci.co.uk/news/world/asia/rss.xml"
+  );
 
-  loading = true;
+  loadFeed(
+    "fedNews",
+    "https://www.federalreserve.gov/feeds/press_monetary.xml"
+  );
 
-  const button = document.getElementById("refresh-btn");
-  button.disabled = true;
-  button.textContent = "جارٍ تحديث الأخبار...";
+  loadFeed(
+    "cpiNews",
+    "https://www.bls.gov/feed/cpi_latest.rss"
+  );
 
-  await Promise.all(feeds.map(loadFeed));
+  loadFeed(
+    "jobsNews",
+    "https://www.bls.gov/feed/empsit.rss"
+  );
 
-  document.getElementById("last-update").textContent =
-    "آخر محاولة تحديث: " +
-    new Date().toLocaleString("ar-IQ", {
-      timeZone:"Asia/Baghdad",
-      dateStyle:"short",
-      timeStyle:"medium"
-    });
-
-  button.disabled = false;
-  button.textContent = "تحديث الأخبار الآن";
-  loading = false;
+  loadFeed(
+    "warNews",
+    "https://feeds.bbci.co.uk/news/world/rss.xml",
+    [
+      "war", "attack", "military", "ceasefire",
+      "iran", "israel", "ukraine", "russia",
+      "conflict", "missile", "peace deal",
+      "الحرب", "هجوم", "عسكري", "هدنة",
+      "إيران", "اسرائيل", "أوكرانيا", "روسيا",
+      "صراع", "صاروخ"
+    ]
+  );
 }
 
-loadAllNews();
-setInterval(loadAllNews, 10 * 60 * 1000);
+refreshAll();
+
+setInterval(refreshAll, 10 * 60 * 1000);
 </script>
 
 </body>
