@@ -81,4 +81,108 @@ setInterval(updateClock,1000);
 </script>
 
 </body>
+<section id="economic-news" dir="rtl" style="background:#101722;color:white;padding:16px;border-radius:15px;margin:18px 0;font-family:Arial">
+  <h2 style="color:#e8bd55">📰 الأخبار الاقتصادية الأمريكية</h2>
+  <p style="color:#aab6c5">مصادر رسمية لمتابعة المستجدات</p>
+
+  <div class="news-box">
+    <h3 style="color:#e8bd55">🏦 الاحتياطي الفيدرالي</h3>
+    <div id="fed-news">جارٍ تحميل أخبار الفيدرالي...</div>
+    <a href="https://www.federalreserve.gov/newsevents.htm" target="_blank" rel="noopener" style="color:#75baff">المصدر الرسمي للفيدرالي</a>
+  </div>
+
+  <div class="news-box">
+    <h3 style="color:#e8bd55">📈 التضخم والأسعار</h3>
+    <div id="cpi-news">جارٍ تحميل أخبار التضخم...</div>
+    <a href="https://www.bls.gov/news.release/cpi.htm" target="_blank" rel="noopener" style="color:#75baff">تقرير CPI الرسمي</a>
+  </div>
+
+  <div class="news-box">
+    <h3 style="color:#e8bd55">👷 الوظائف والبطالة</h3>
+    <div id="jobs-news">جارٍ تحميل أخبار الوظائف...</div>
+    <a href="https://www.bls.gov/news.release/empsit.htm" target="_blank" rel="noopener" style="color:#75baff">تقرير الوظائف الرسمي</a>
+  </div>
+
+  <p style="color:#9aa8ba;font-size:12px">
+    الأخبار للتثقيف والمتابعة. قد يتأخر تحديث الخلاصات أو يتعذر تحميلها.
+  </p>
+</section>
+
+<style>
+.news-box {
+  background:#1a2635;
+  border:1px solid #34445a;
+  border-radius:12px;
+  padding:13px;
+  margin:12px 0;
+  line-height:1.8;
+}
+.news-item {
+  border-bottom:1px solid #34445a;
+  padding:9px 0;
+}
+.news-item a {
+  color:#fff;
+  text-decoration:none;
+}
+.news-date {
+  color:#9aa8ba;
+  font-size:12px;
+}
+</style>
+
+<script>
+async function loadNews(feed, elementId, filter) {
+  const box = document.getElementById(elementId);
+  try {
+    const url = "https://api.rss2json.com/v1/api.json?rss_url=" +
+      encodeURIComponent(feed);
+    const response = await fetch(url);
+    if (!response.ok) throw new Error("Network");
+    const data = await response.json();
+    if (data.status !== "ok") throw new Error("Feed");
+
+    let items = data.items || [];
+    if (filter) {
+      const filtered = items.filter(item =>
+        filter.test(item.title || "")
+      );
+      if (filtered.length) items = filtered;
+    }
+
+    box.innerHTML = items.slice(0,5).map(item => `
+      <div class="news-item">
+        <a href="${item.link}" target="_blank" rel="noopener">
+          ${item.title}
+        </a>
+        <div class="news-date">
+          ${item.pubDate ? new Date(item.pubDate).toLocaleString(
+            "ar-IQ",{timeZone:"Asia/Baghdad"}) : ""}
+        </div>
+      </div>
+    `).join("") || "لا توجد أخبار متاحة حالياً.";
+  } catch (error) {
+    box.textContent =
+      "تعذر تحميل الخلاصة الآن. استخدم رابط المصدر الرسمي.";
+  }
+}
+
+loadNews(
+  "https://www.federalreserve.gov/feeds/press_monetary.xml",
+  "fed-news"
+);
+
+loadNews(
+  "https://www.bls.gov/feed/bls_latest.rss",
+  "cpi-news",
+  /consumer price|inflation|CPI|producer price|PPI/i
+);
+
+loadNews(
+  "https://www.bls.gov/feed/bls_latest.rss",
+  "jobs-news",
+  /employment situation|unemployment|job openings|employment/i
+);
+</script>
+  
 </html>
