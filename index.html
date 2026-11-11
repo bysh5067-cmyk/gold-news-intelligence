@@ -542,7 +542,7 @@ async function refreshAll(){
   ];
 
   await Promise.allSettled(tasks);
-
+  analyzeGoldNews();
   document.getElementById("lastUpdate").textContent =
     "آخر تحديث: " +
     new Date().toLocaleTimeString("ar-IQ",{
@@ -553,7 +553,82 @@ async function refreshAll(){
   button.disabled = false;
   button.textContent = "تحديث جميع الأخبار";
 }
+function analyzeGoldNews(){
 
+  const direction = document.getElementById("goldDirection");
+  const confidence = document.getElementById("goldConfidence");
+  const reasons = document.getElementById("goldReasons");
+
+  const allNews = [
+    ...collectedNews.asia,
+    ...collectedNews.fed,
+    ...collectedNews.cpi,
+    ...collectedNews.jobs,
+    ...collectedNews.war
+  ];
+
+  const uniqueNews = [
+    ...new Map(
+      allNews.map(item => [
+        item.link || item.title,
+        item
+      ])
+    ).values()
+  ];
+
+  if(uniqueNews.length < 3){
+    direction.textContent = "بيانات غير كافية";
+    confidence.textContent = "لا توجد أخبار كافية للتحليل";
+    reasons.textContent = "انتظر تحميل المزيد من الأخبار.";
+    return;
+  }
+    let positive = 0;
+  let negative = 0;
+  let details = [];
+
+  uniqueNews.forEach(item => {
+    const text = (
+      (item.title || "") + " " +
+      (item.description || "")
+    ).toLowerCase();
+
+    if(
+      text.includes("rate cut") ||
+      text.includes("خفض الفائدة") ||
+      text.includes("ضعف الدولار") ||
+      text.includes("weak dollar")
+    ){
+      positive++;
+      details.push("خبر قد يدعم الذهب: " + (item.title || ""));
+    }
+
+    if(
+      text.includes("rate hike") ||
+      text.includes("رفع الفائدة") ||
+      text.includes("قوة الدولار") ||
+      text.includes("strong dollar")
+    ){
+      negative++;
+      details.push("خبر قد يضغط على الذهب: " + (item.title || ""));
+    }
+  });
+
+  if(positive > negative){
+    direction.textContent = "ميل صاعد محتمل للذهب";
+  }else if(negative > positive){
+    direction.textContent = "ميل هابط محتمل للذهب";
+  }else{
+    direction.textContent = "محايد أو أخبار متضاربة";
+  }
+
+  confidence.textContent =
+    "ثقة منخفضة — تحليل أولي بالكلمات المفتاحية";
+
+  reasons.textContent = details.length
+    ? details.slice(0,5).join("\n")
+    : "لا توجد أخبار واضحة كافية لتحديد اتجاه الذهب.";
+
+}
 refreshAll();
 setInterval(refreshAll,10*60*1000);
 </script>
