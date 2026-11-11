@@ -420,6 +420,10 @@ async function loadOne(id,url,keywords=[]){
         );
       });
     }
+    items.sort((a,b)=>
+  new Date(b.pubDate).getTime() -
+  new Date(a.pubDate).getTime()
+);
 
     // V10 - حفظ الأخبار حسب القسم
     const sections = {
