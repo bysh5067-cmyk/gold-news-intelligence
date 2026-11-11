@@ -46,6 +46,34 @@ h1{color:#e8bd55;font-size:24px;margin:5px}
 }
 .news-item a:hover{color:white}
 .news-date{color:#8290a2;font-size:11px;margin-top:4px}
+  .news-category{
+  display:inline-block;
+  padding:4px 9px;
+  border-radius:5px;
+  font-size:11px;
+  font-weight:bold;
+  margin-bottom:7px;
+}
+
+.category-war{
+  background:#542126;
+  color:#ff7777;
+}
+
+.category-economic{
+  background:#17452f;
+  color:#70e0a0;
+}
+
+.category-political{
+  background:#51401c;
+  color:#f1d58c;
+}
+
+.category-general{
+  background:#303a48;
+  color:#c4cedb;
+}
 button{
   width:100%;padding:14px;
   background:#c49b42;color:#10151d;
@@ -207,7 +235,61 @@ async function getFeed(url){
 
   return data.items;
 }
+function classifyNews(item){
+  const content = (
+    (item.title || "") + " " +
+    (item.description || "")
+  ).toLowerCase();
 
+  const warWords = [
+    "war","attack","military","missile","strike",
+    "conflict","ceasefire","invasion","bombing",
+    "الحرب","هجوم","عسكري","صاروخ","قصف",
+    "اشتباك","نزاع","هدنة","غزو"
+  ];
+
+  const economicWords = [
+    "inflation","economy","economic","jobs",
+    "unemployment","interest rate","federal reserve",
+    "cpi","markets","dollar","gdp",
+    "التضخم","اقتصاد","اقتصادي","وظائف",
+    "البطالة","الفائدة","الفيدرالي","الأسعار"
+  ];
+
+  const politicalWords = [
+    "president","government","election",
+    "minister","parliament","sanctions",
+    "diplomacy","political",
+    "رئيس","حكومة","انتخابات","وزير",
+    "برلمان","عقوبات","سياسي","دبلوماسي"
+  ];
+
+  if(warWords.some(word=>content.includes(word))){
+    return {
+      label:"حروب وتوترات",
+      className:"category-war"
+    };
+  }
+
+  if(economicWords.some(word=>content.includes(word))){
+    return {
+      label:"اقتصادي",
+      className:"category-economic"
+    };
+  }
+
+  if(politicalWords.some(word=>content.includes(word))){
+    return {
+      label:"سياسي",
+      className:"category-political"
+    };
+  }
+
+  return {
+    label:"أخبار عامة",
+    className:"category-general"
+  };
+}
 function renderNews(id,items){
   const container = document.getElementById(id);
   container.replaceChildren();
@@ -222,6 +304,13 @@ function renderNews(id,items){
     article.className = "news-item";
 
     const link = document.createElement("a");
+    const category = classifyNews(item);
+
+const badge = document.createElement("div");
+badge.className = "news-category " + category.className;
+badge.textContent = category.label;
+
+article.appendChild(badge);
     link.textContent = item.title || "خبر بدون عنوان";
 
     const safeUrl = (() => {
