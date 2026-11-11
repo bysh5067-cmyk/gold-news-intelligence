@@ -402,6 +402,7 @@ article.appendChild(badge);
 }
 
 async function loadOne(id,url,keywords=[]){
+
   showMessage(id,"جاري تحميل الأخبار...");
 
   try{
@@ -420,16 +421,31 @@ async function loadOne(id,url,keywords=[]){
       });
     }
 
+    // V10 - حفظ الأخبار حسب القسم
+    const sections = {
+      asiaNews: "asia",
+      fedNews: "fed",
+      cpiNews: "cpi",
+      jobsNews: "jobs"
+    };
+
+    const section = sections[id];
+
+    if(section){
+      collectedNews[section] = items;
+    }
+
     renderNews(id,items);
 
   }catch(error){
+
     showMessage(
       id,
       "تعذر تحميل الأخبار حالياً. حاول التحديث لاحقاً."
     );
+
   }
 }
-
 async function loadWarNews(){
   showMessage("warNews","جاري تحميل الأخبار الدولية...");
 
