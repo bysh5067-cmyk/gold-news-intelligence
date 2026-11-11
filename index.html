@@ -245,6 +245,14 @@ footer{
 
 <script>
 const PROXY = "https://api.rss2json.com/v1/api.json?rss_url=";
+  // V10 - تجميع الأخبار للتحليل
+let collectedNews = {
+  asia: [],
+  fed: [],
+  cpi: [],
+  jobs: [],
+  war: []
+};
 
 function updateClock(){
   const now = new Date();
