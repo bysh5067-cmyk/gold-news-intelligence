@@ -596,14 +596,17 @@ function analyzeGoldNews(){
         if(match([
           "inflation rises","inflation increases",
           "inflation accelerates","cpi rises",
-          "cpi increases","ارتفاع التضخم",
-          "زيادة التضخم","التضخم يرتفع"
-        ])){
-          add(-1,"ارتفاع التضخم قد يؤخر خفض الفائدة: ");
-        }
+          "cpi increases",
+"cpi for all items increases",
+"cpi for all items rises",
+"ارتفاع التضخم",
+"زيادة التضخم","التضخم يرتفع"
+])){
+  add(-1,"ارتفاع التضخم قد يؤخر خفض الفائدة: ");
+}
 
         else if(match([
-          "inflation falls","inflation declines",
+          "inflation falls","inflation declines",م
           "inflation cools","inflation slows",
           "cpi falls","cpi declines",
           "انخفاض التضخم","تراجع التضخم",
@@ -630,6 +633,8 @@ function analyzeGoldNews(){
           "unemployment falls","unemployment declines",
           "payroll rises","payroll increases",
           "strong hiring","jobs added",
+          "payroll employment rises",
+"payroll employment increases",
           "انخفاض البطالة","تحسن التوظيف",
           "ارتفاع الوظائف","زيادة الوظائف"
         ])){
