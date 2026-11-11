@@ -434,11 +434,13 @@ async function loadOne(id,url,keywords=[]){
 
     renderNews(id,items);
 
-  }catch(error){
+    }catch(error){
+
+    console.error("News loading error:", id, error);
 
     showMessage(
       id,
-      "تعذر تحميل الأخبار حالياً. حاول التحديث لاحقاً."
+      "فشل تحميل المصدر: " + error.message
     );
 
   }
