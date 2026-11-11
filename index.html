@@ -113,6 +113,7 @@ footer{
   <h2>🌏 السوق الآسيوي</h2>
   <div class="status">الصين - اليابان - أستراليا - آسيا والمحيط الهادئ</div>
   <div id="asiaNews" class="status">جاري تحميل الأخبار...</div>
+  <div id="timeDebug" class="status">جاري فحص توقيت الأخبار...</div>
 </section>
 
 <section class="card">
@@ -330,6 +331,8 @@ function classifyNews(item){
 function getRecentNews(items){
 
   const now = Date.now();
+  const debugBox = document.getElementById("timeDebug");
+if(debugBox) debugBox.textContent = "وقت الجهاز: " + new Date().toString();
   const last24Hours = 24 * 60 * 60 * 1000;
 
   return (items || []).filter(item=>{
