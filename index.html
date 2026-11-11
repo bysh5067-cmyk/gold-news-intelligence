@@ -337,7 +337,7 @@ function getRecentNews(items){
     const published = item.pubDate
       ? new Date(item.pubDate).getTime()
       : NaN;
-    console.log("تاريخ الخبر:", item.pubDate, "التاريخ المقروء:", new Date(item.pubDate).toString());
+    showMessage("asiaNews", "تاريخ الخبر: " + item.pubDate + " | المقروء: " + new Date(item.pubDate).toString());
     return Number.isFinite(published) &&
            published <= now &&
            now - published <= last24Hours;
