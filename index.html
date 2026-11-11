@@ -526,82 +526,210 @@ async function refreshAll(){
   button.disabled = false;
   button.textContent = "تحديث جميع الأخبار";
 }
+
 function analyzeGoldNews(){
 
   const direction = document.getElementById("goldDirection");
   const confidence = document.getElementById("goldConfidence");
   const reasons = document.getElementById("goldReasons");
 
-  const allNews = [
-    ...collectedNews.asia,
-    ...collectedNews.fed,
-    ...collectedNews.cpi,
-    ...collectedNews.jobs,
-    ...collectedNews.war
-  ];
-
-  const uniqueNews = [
-    ...new Map(
-      allNews.map(item => [
-        item.link || item.title,
-        item
-      ])
-    ).values()
-  ];
-
-  if(uniqueNews.length < 3){
-    direction.textContent = "بيانات غير كافية";
-    confidence.textContent = "لا توجد أخبار كافية للتحليل";
-    reasons.textContent = "انتظر تحميل المزيد من الأخبار.";
-    return;
-  }
-    let positive = 0;
+  let score = 0;
+  let signalCount = 0;
+  let positive = 0;
   let negative = 0;
   let details = [];
+  let categories = new Set();
+  let seen = new Set();
 
-  uniqueNews.forEach(item => {
-    const text = (
-      (item.title || "") + " " +
-      (item.description || "")
-    ).toLowerCase();
+  function checkNews(items, category){
 
-    if(
-      text.includes("rate cut") ||
-      text.includes("خفض الفائدة") ||
-      text.includes("ضعف الدولار") ||
-      text.includes("weak dollar")
-    ){
-      positive++;
-      details.push("خبر قد يدعم الذهب: " + (item.title || ""));
-    }
+    (items || []).forEach(item => {
 
-    if(
-      text.includes("rate hike") ||
-      text.includes("رفع الفائدة") ||
-      text.includes("قوة الدولار") ||
-      text.includes("strong dollar")
-    ){
-      negative++;
-      details.push("خبر قد يضغط على الذهب: " + (item.title || ""));
-    }
-  });
+      const title = item.title || "";
+      const text = (
+        title + " " + (item.description || "")
+      ).toLowerCase();
 
-  if(positive > negative){
-    direction.textContent = "ميل صاعد محتمل للذهب";
-  }else if(negative > positive){
-    direction.textContent = "ميل هابط محتمل للذهب";
-  }else{
-    direction.textContent = "محايد أو أخبار متضاربة";
+      const key = item.link || title;
+
+      if(seen.has(key)) return;
+      seen.add(key);
+
+      function match(words){
+        return words.some(word => text.includes(word));
+      }
+
+      function add(value, message){
+        score += value;
+        signalCount++;
+        categories.add(category);
+
+        if(value > 0) positive++;
+        if(value < 0) negative++;
+
+        details.push(message + title);
+      }
+
+      // الفائدة الأمريكية
+      if(category === "الفيدرالي"){
+
+        if(match([
+          "rate cut","cuts rates","dovish",
+          "خفض الفائدة","تخفيض الفائدة",
+          "تيسير السياسة النقدية"
+        ])){
+          add(2,"احتمال دعم الذهب بسبب تراجع الفائدة: ");
+        }
+
+        else if(match([
+          "rate hike","raises rates","hawkish",
+          "رفع الفائدة","زيادة الفائدة",
+          "تشديد السياسة النقدية"
+        ])){
+          add(-2,"احتمال ضغط على الذهب بسبب ارتفاع الفائدة: ");
+        }
+      }
+
+      // التضخم
+      if(category === "التضخم"){
+
+        if(match([
+          "inflation rises","inflation increases",
+          "inflation accelerates","cpi rises",
+          "cpi increases","ارتفاع التضخم",
+          "زيادة التضخم","التضخم يرتفع"
+        ])){
+          add(-1,"ارتفاع التضخم قد يؤخر خفض الفائدة: ");
+        }
+
+        else if(match([
+          "inflation falls","inflation declines",
+          "inflation cools","inflation slows",
+          "cpi falls","cpi declines",
+          "انخفاض التضخم","تراجع التضخم",
+          "التضخم يتراجع"
+        ])){
+          add(1,"تراجع التضخم قد يدعم توقعات خفض الفائدة: ");
+        }
+      }
+
+      // الوظائف والبطالة
+      if(category === "الوظائف"){
+
+        if(match([
+          "unemployment rises","unemployment increases",
+          "payroll declines","payroll falls",
+          "job losses","weak hiring",
+          "ارتفاع البطالة","زيادة البطالة",
+          "تراجع الوظائف","انخفاض الوظائف"
+        ])){
+          add(1,"ضعف سوق العمل قد يدعم الذهب: ");
+        }
+
+        else if(match([
+          "unemployment falls","unemployment declines",
+          "payroll rises","payroll increases",
+          "strong hiring","jobs added",
+          "انخفاض البطالة","تحسن التوظيف",
+          "ارتفاع الوظائف","زيادة الوظائف"
+        ])){
+          add(-1,"قوة سوق العمل قد تضغط على الذهب: ");
+        }
+      }
+
+      // الحروب والتوترات
+      if(category === "الحروب"){
+
+        if(match([
+          "military escalation","airstrike",
+          "missile attack","invasion",
+          "conflict intensifies","military attack",
+          "تصعيد عسكري","هجوم صاروخي",
+          "قصف","غزو","هجوم عسكري"
+        ])){
+          add(1,"تصاعد التوترات قد يزيد الطلب على الملاذات الآمنة: ");
+        }
+
+        else if(match([
+          "ceasefire","truce","peace deal",
+          "de-escalation","withdrawal",
+          "وقف إطلاق النار","هدنة",
+          "اتفاق سلام","تهدئة","انسحاب القوات"
+        ])){
+          add(-1,"التهدئة قد تقلل الطلب على الملاذات الآمنة: ");
+        }
+      }
+
+      // الدولار
+      if(match([
+        "strong dollar","dollar strengthens",
+        "dollar rises","قوة الدولار",
+        "ارتفاع الدولار"
+      ])){
+        add(-1,"قوة الدولار قد تضغط على الذهب: ");
+      }
+
+      else if(match([
+        "weak dollar","dollar weakens",
+        "dollar falls","ضعف الدولار",
+        "تراجع الدولار"
+      ])){
+        add(1,"ضعف الدولار قد يدعم الذهب: ");
+      }
+
+    });
   }
 
-  confidence.textContent =
-    "ثقة منخفضة — تحليل أولي بالكلمات المفتاحية";
+  checkNews(collectedNews.fed,"الفيدرالي");
+  checkNews(collectedNews.cpi,"التضخم");
+  checkNews(collectedNews.jobs,"الوظائف");
+  checkNews(collectedNews.war,"الحروب");
+  checkNews(collectedNews.asia,"آسيا");
 
-  reasons.textContent = details.length
-    ? details.slice(0,5).join("\n")
-    : "لا توجد أخبار واضحة كافية لتحديد اتجاه الذهب.";
+  // تحديد النتيجة
+  if(signalCount === 0 || Math.abs(score) < 2){
+
+    direction.textContent =
+      "محايد أو إشارات غير كافية";
+
+  }else if(score > 0){
+
+    direction.textContent =
+      "ميل صاعد محتمل للذهب";
+
+  }else{
+
+    direction.textContent =
+      "ميل هابط محتمل للذهب";
+  }
+
+  // مستوى الثقة
+  if(signalCount >= 4 && categories.size >= 2 &&
+     Math.abs(score) >= 3){
+
+    confidence.textContent =
+      "ثقة متوسطة — إشارات متوافقة نسبياً";
+
+  }else{
+
+    confidence.textContent =
+      "ثقة منخفضة — التحليل أولي ويحتاج تأكيداً";
+  }
+
+  // عرض الأسباب
+  if(details.length){
+
+    reasons.textContent =
+      details.slice(0,8).join("\n\n");
+
+  }else{
+
+  ،  reasons.textContent =
+      "لم نعثر على إشارات اقتصادية واضحة كافية. نحتاج أخباراً وتفاصيل أكثر.";
+  }
 
 }
+
 refreshAll();
 setInterval(refreshAll,10*60*1000);
 </script>
