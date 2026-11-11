@@ -480,7 +480,7 @@ renderNews("warNews",unique);
   }catch(error){
     showMessage(
       "warNews",
-      "تعذر تحميل الأخبار حالياً. حاول لاحقاً."
+      "خطأ التحميل: " + error.message
     );
   }
 }
