@@ -325,16 +325,40 @@ function classifyNews(item){
     className:"category-general"
   };
 }
+  
+// فلترة الأخبار المنشورة خلال آخر 24 ساعة
+function getRecentNews(items){
+
+  const now = Date.now();
+  const last24Hours = 24 * 60 * 60 * 1000;
+
+  return (items || []).filter(item=>{
+
+    const published = item.pubDate
+      ? new Date(item.pubDate).getTime()
+      : NaN;
+
+    return Number.isFinite(published) &&
+           published <= now &&
+           now - published <= last24Hours;
+
+  });
+}
+
 function renderNews(id,items){
   const container = document.getElementById(id);
   container.replaceChildren();
 
-  if(!items || items.length === 0){
-    showMessage(id,"لا توجد أخبار مطابقة حالياً.");
-    return;
-  }
+  
+const recentItems = getRecentNews(items);
 
-  items.slice(0,7).forEach(item=>{
+if(recentItems.length === 0){
+  showMessage(id,"لا توجد أخبار منشورة خلال آخر 24 ساعة.");
+  return;
+}
+
+recentItems.slice(0,7).forEach(item=>{
+
     const article = document.createElement("div");
     article.className = "news-item";
 
