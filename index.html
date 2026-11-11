@@ -541,9 +541,22 @@ function analyzeGoldNews(){
   let categories = new Set();
   let seen = new Set();
 
-  function checkNews(items, category){
+    function checkNews(items, category){
+
+    const now = Date.now();
+    const last24Hours = 24 * 60 * 60 * 1000;
 
     (items || []).forEach(item => {
+
+      const published = item.pubDate
+        ? new Date(item.pubDate).getTime()
+        : NaN;
+
+      if(!Number.isFinite(published)) return;
+
+      if(now - published > last24Hours) return;
+
+      if(published > now) return;
 
       const title = item.title || "";
       const text = (
