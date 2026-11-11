@@ -499,7 +499,10 @@ async function loadWarNews(){
       }
     });
 
-    renderNews("warNews",unique);
+    // V10 - حفظ أخبار الحروب
+collectedNews.war = unique;
+
+renderNews("warNews",unique);
 
   }catch(error){
     showMessage(
