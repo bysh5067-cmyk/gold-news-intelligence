@@ -24,7 +24,7 @@ h1{color:#e8bd55;font-size:24px;margin:5px}
 .clock{color:#e8bd55;font-size:19px;margin:12px 0}
 .card{
   background:#121a26;
-  border:1px solid #263447;
+  border:1px solid #
   border-radius:12px;
   padding:15px;margin-bottom:15px;
 }
@@ -451,16 +451,37 @@ async function loadWarNews(){
     "https://feeds.bbci.co.uk/arabic/rss.xml"
   ];
 
-  const keywords = [
-    "war","attack","military","ceasefire",
-    "iran","israel","ukraine","russia",
-    "conflict","missile","strike",
-    "الحرب","هجوم","عسكري","هدنة",
-    "إيران","اسرائيل","إسرائيل",
-    "أوكرانيا","روسيا","صراع","صاروخ"
-  ];
+  
+const keywords = [
+  "military escalation",
+  "airstrike",
+  "missile attack",
+  "invasion",
+  "military attack",
+  "armed conflict",
+  "troops deployed",
+  "war escalates",
+  "ceasefire",
+  "peace deal",
+  "military operation",
+  "iran attack",
+  "israel attack",
+  "ukraine war",
+  "russia attack",
+  "هجوم عسكري",
+  "تصعيد عسكري",
+  "قصف",
+  "هجوم صاروخي",
+  "غزو",
+  "اشتباكات مسلحة",
+  "تحرك القوات",
+  "وقف إطلاق النار",
+  "هدنة",
+  "عملية عسكرية",
+  "الحرب في أوكرانيا"
+];
 
-  try{
+try{
     const results = await Promise.allSettled(
       sources.map(url=>getFeed(url))
     );
@@ -489,6 +510,7 @@ async function loadWarNews(){
 
     filtered.forEach(item=>{
       const key = item.link || item.title;
+  
 
       if(!seen.has(key)){
         seen.add(key);
