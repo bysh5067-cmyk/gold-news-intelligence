@@ -327,12 +327,18 @@ function classifyNews(item){
   };
 }
   
-// فلترة الأخبار المنشورة خلال آخر 24 ساعة
+
+ // فلترة الأخبار المنشورة خلال آخر 24 ساعة
 function getRecentNews(items){
 
   const now = Date.now();
   const debugBox = document.getElementById("timeDebug");
-if(debugBox) debugBox.textContent = "وقت الجهاز: " + new Date().toString();
+
+  if(debugBox){
+    debugBox.textContent =
+      "وقت الجهاز: " + new Date(now).toString();
+  }
+
   const last24Hours = 24 * 60 * 60 * 1000;
 
   return (items || []).filter(item=>{
@@ -340,13 +346,14 @@ if(debugBox) debugBox.textContent = "وقت الجهاز: " + new Date().toStrin
     const published = item.pubDate
       ? new Date(item.pubDate).getTime()
       : NaN;
-    showMessage("asiaNews", "تاريخ الخبر: " + item.pubDate + " | المقروء: " + new Date(item.pubDate).toString());
+
     return Number.isFinite(published) &&
            published <= now &&
            now - published <= last24Hours;
 
   });
 }
+
 
 function renderNews(id,items){
   const container = document.getElementById(id);
