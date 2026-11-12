@@ -253,21 +253,47 @@ function showMessage(id,message){
   document.getElementById(id).textContent = message;
 }
 async function getFeed(url){
-  const response = await fetch(
-    PROXY + encodeURIComponent(url)
-  );
 
-  if(!response.ok){
-    throw new Error("تعذر الاتصال بمصدر الأخبار");
+  const controller = new AbortController();
+
+  const timeout = setTimeout(()=>{
+    controller.abort();
+  },15000);
+
+  try{
+
+    const response = await fetch(
+      PROXY + encodeURIComponent(url),
+      {
+        signal: controller.signal
+      }
+    );
+
+    if(!response.ok){
+      throw new Error("تعذر الاتصال بمصدر الأخبار");
+    }
+
+    const data = await response.json();
+
+    if(data.status !== "ok" || !Array.isArray(data.items)){
+      throw new Error("مصدر الأخبار لم يرجع بيانات صحيحة");
+    }
+
+    return data.items;
+
+  }catch(error){
+
+    if(error.name === "AbortError"){
+      throw new Error("انتهت مهلة الاتصال بمصدر الأخبار");
+    }
+
+    throw error;
+
+  }finally{
+
+    clearTimeout(timeout);
+
   }
-
-  const data = await response.json();
-
-  if(data.status !== "ok" || !Array.isArray(data.items)){
-    throw new Error("مصدر الأخبار لم يرجع بيانات");
-  }
-
-  return data.items;
 }
 
 function classifyNews(item){
@@ -326,47 +352,70 @@ function classifyNews(item){
   };
 }
   
-
- // فلترة الأخبار المنشورة خلال آخر 24 ساعة
-function getRecentNews(items){
+ function getRecentNews(items){
 
   const now = Date.now();
+  const last24Hours = 24 * 60 * 60 * 1000;
+
   const debugBox = document.getElementById("timeDebug");
 
   if(debugBox){
     debugBox.textContent =
-      "وقت الجهاز: " + new Date(now).toString();
+      "وقت الجهاز: " + new Date(now).toLocaleString("ar-IQ");
   }
 
-  const last24Hours = 24 * 60 * 60 * 1000;
+  return (items || [])
+    .filter(item => {
 
-  return (items || []).filter(item=>{
+      const published = item.pubDate
+        ? new Date(item.pubDate).getTime()
+        : NaN;
 
-    const published = item.pubDate
-      ? new Date(item.pubDate).getTime()
-      : NaN;
+      return Number.isFinite(published) &&
+             published <= now &&
+             now - published <= last24Hours;
 
-    return Number.isFinite(published) &&
-           published <= now &&
-           now - published <= last24Hours;
-
-  });
+    })
+    .sort((a,b) =>
+      new Date(b.pubDate).getTime() -
+      new Date(a.pubDate).getTime()
+    );
 }
+
+
 
 
 function renderNews(id,items){
+
   const container = document.getElementById(id);
   container.replaceChildren();
 
-  
-const recentItems = getRecentNews(items);
+  const recentItems = getRecentNews(items);
 
-if(recentItems.length === 0){
-  showMessage(id,"لا توجد أخبار منشورة خلال آخر 24 ساعة.");
-  return;
-}
+  if(recentItems.length === 0){
+    showMessage(id,"لا توجد أخبار حديثة خلال آخر 24 ساعة.");
+    return;
+  }
 
-recentItems.slice(0,7).forEach(item=>{
+  const seen = new Set();
+
+  const uniqueItems = recentItems.filter(item=>{
+
+    const title = (item.title || "")
+      .toLowerCase()
+      .replace(/[^\p{L}\p{N}]/gu,"")
+      .trim();
+
+    if(!title || seen.has(title)){
+      return false;
+    }
+
+    seen.add(title);
+    return true;
+
+  });
+
+  uniqueItems.slice(0,7).forEach(item=>{
 
     const article = document.createElement("div");
     article.className = "news-item";
@@ -374,18 +423,21 @@ recentItems.slice(0,7).forEach(item=>{
     const link = document.createElement("a");
     const category = classifyNews(item);
 
-const badge = document.createElement("div");
-badge.className = "news-category " + category.className;
-badge.textContent = category.label;
+    const badge = document.createElement("div");
+    badge.className = "news-category " + category.className;
+    badge.textContent = category.label;
 
-article.appendChild(badge);
+    article.appendChild(badge);
+
     link.textContent = item.title || "خبر بدون عنوان";
 
     const safeUrl = (() => {
       try{
         const parsed = new URL(item.link);
+
         return ["https:","http:"].includes(parsed.protocol)
           ? parsed.href : null;
+
       }catch(e){
         return null;
       }
@@ -398,12 +450,26 @@ article.appendChild(badge);
     }
 
     const date = document.createElement("div");
-    date.className = "news-date";
-    date.textContent = item.pubDate || "";
+date.className = "news-date";
 
+const publishedDate = new Date(item.pubDate);
+
+date.textContent = Number.isNaN(publishedDate.getTime())
+  ? "وقت النشر غير متوفر"
+  : publishedDate.toLocaleString("ar-IQ", {
+      timeZone: "Asia/Baghdad",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true
+    }) + " (توقيت العراق)";
     article.appendChild(link);
     article.appendChild(date);
+
     container.appendChild(article);
+
   });
 }
 
