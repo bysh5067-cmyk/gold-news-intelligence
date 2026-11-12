@@ -253,7 +253,6 @@ setInterval(updateClock,1000);
 function showMessage(id,message){
   document.getElementById(id).textContent = message;
 }
-
 async function getFeed(url){
   const response = await fetch(
     PROXY + encodeURIComponent(url)
@@ -271,6 +270,7 @@ async function getFeed(url){
 
   return data.items;
 }
+
 function classifyNews(item){
   const content = (
     (item.title || "") + " " +
